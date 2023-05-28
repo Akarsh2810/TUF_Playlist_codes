@@ -1,0 +1,47 @@
+import java.util.*;
+class LeetCode {
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 3, 4, 5, 6};
+        int arr_length = 6;
+        int arr_totalSum = 0;
+        for(int element : arr)
+            arr_totalSum += element;
+        boolean flag = false;
+        for(int firstPartitionLength = 1; firstPartitionLength <= arr_length; firstPartitionLength++) {
+            if((arr_totalSum * firstPartitionLength) % arr_length == 0) {
+                int firstPartitionSum = arr_totalSum * firstPartitionLength / arr_length;
+                List<Integer> firstPartitionList = new ArrayList<>();
+                if(!flag && check(arr, arr_length, 0, firstPartitionList, firstPartitionSum, firstPartitionLength, new boolean[arr_length][arr_totalSum][arr_length])) {
+                    if(firstPartitionList.size() != arr_length) {
+                        flag = true;
+                        for(int element : firstPartitionList)
+                            System.out.print(element + " ");
+                        System.out.println();
+                        for(int element : arr) {
+                            if(!firstPartitionList.contains(element))
+                                System.out.print(element + " ");
+                        }
+                        System.out.println();
+                    }
+                }
+            }
+        }
+        if(!flag)
+            System.out.println(-1);
+    }
+    static boolean check(int[] arr, int arr_length, int index, List<Integer> firstPartitionList, int firstPartitionSum, int firstPartitionLength, boolean[][][] memo) {
+        if(index == arr_length)
+            return false;
+        if(firstPartitionLength == 0)
+            return firstPartitionSum == 0;
+        if(memo[index][firstPartitionSum][firstPartitionLength])
+            return memo[index][firstPartitionSum][firstPartitionLength];
+        if(arr[index] <= firstPartitionSum) {
+            firstPartitionList.add(arr[index]);
+            if(check(arr, arr_length, index + 1, firstPartitionList, firstPartitionSum - arr[index], firstPartitionLength - 1, memo))
+                return memo[index][firstPartitionSum][firstPartitionLength] = true;
+            firstPartitionList.remove(firstPartitionList.size() - 1);
+        }
+        return memo[index][firstPartitionSum][firstPartitionLength] = check(arr, arr_length, index + 1, firstPartitionList, firstPartitionSum, firstPartitionLength, memo);
+    }
+}
